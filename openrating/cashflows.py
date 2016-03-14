@@ -149,8 +149,6 @@ class CashFlow(object):
                     self.pool.recoveries[period] +
                     self.cash_reserve.available_cash[period - 1] +
                     self.cash_account.available_cash[period - 1])
-        total_pool = interest + notional
-        losses = self.pool.losses[period]
 
         # proportions of notional to distribute
         proportions = [(tranche.balances[0] / self.pool.balances[0]) * notional for tranche in self.tranches]
@@ -159,14 +157,13 @@ class CashFlow(object):
         self.senior_expenses.pay_expanses(periods_num, period, interest, self.pool.balances[period])
         self.servicing_fees.pay_expenses(periods_num, period, interest, self.pool.balances[period])
 
-        # perform payments of interest no prorata
         last_tranche = 0
         for i, tranche in enumerate(self.tranches):
-            # iterate over the tranches distribution interest and notional by priority
+            # no prorata when paying interests
             interest = tranche.pay_interest(periods_num, period, interest, libors)
 
+            # prorata payments of the principal
             if tranche.prorata:
-                # iterate over the tranches distribution interest by priority
                 if i > 0:
                     proportions[i] += proportions[i - 1]
                     proportions[i - 1] = 0

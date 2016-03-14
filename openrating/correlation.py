@@ -36,4 +36,13 @@ class Correlation(object):
             correlation += self.industries[issuer1.industry]
         return correlation
 
+    def get_correlation_matrix(self, assets):
+        asset_len = assets.size
+        correlation = []
+        for i in xrange(asset_len):
+            i_correlation = [1]
+            for j in xrange(i + 1, asset_len):
+                i_correlation.append(self.get_correlation(assets.ix[i, :], assets.ix[j, :]))
+            correlation.append(i_correlation)
 
+        return correlation

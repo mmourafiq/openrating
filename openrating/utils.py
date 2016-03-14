@@ -1,5 +1,6 @@
 from __future__ import division
 
+import numpy as np
 import pandas as pd
 
 
@@ -29,6 +30,20 @@ class Frequencies(object):
             raise ValueError('Frequency not supported.')
 
         return len(pd.date_range(start_date, end_date, freq=frequency))
+
+    @staticmethod
+    def get_conditional_probabilities(conditional_probabilities, periods_num):
+        """
+        Returns an interpolated conditional probabilities
+        :param conditional_probabilities:
+        :param periods_num:
+        """
+        if periods_num == 1:
+            return conditional_probabilities
+
+        if periods_num == 12:
+            conditional_probabilities = conditional_probabilities.reindex(np.arange(0, 10, 1.0/12))
+            return conditional_probabilities.interpolate(method='cubic', downcast='infer')
 
 
 def year_frac(start_date, end_date, basis=3):
